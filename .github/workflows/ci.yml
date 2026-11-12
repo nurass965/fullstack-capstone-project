@@ -1,0 +1,36 @@
+name: Fullstack Capstone CI/CD
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-and-verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install backend dependencies
+        working-directory: ./giftlink-backend
+        run: npm install
+
+      - name: Verify backend syntax and routes
+        working-directory: ./giftlink-backend
+        run: |
+          node --check app.js
+          node --check models/db.js
+          node --check routes/giftRoutes.js
+          node --check routes/searchRoutes.js
+          node --check routes/authRoutes.js
+
+      - name: Verify sentiment module
+        run: node --check sentiment/index.js
